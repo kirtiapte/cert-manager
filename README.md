@@ -22,6 +22,46 @@ As an end-user, you will never need to manually create a Challenge resource. Onc
 
 ## User Flow
 
+- User creates issuer and certificate
+<pre>
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: <issuer_name>
+  namespace: <namespace>
+spec:
+  acme:
+    email: <email_address>
+    #New enrolments only
+    server: https://acme.digicert.com/v2/acme/directory/
+    externalAccountBinding:
+      keyID: <eab_kid>
+      keySecretRef:
+        name: <eab_secret_name>
+        key: secret
+      keyAlgorithm: HS256
+    privateKeySecretRef:
+        name: <account_private_key_name>
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+
+---
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: <certificate_name>
+  namespace: <namespace>
+spec:
+  dnsNames:
+    - <certificate_common_name>
+  secretName: <certificate_private_key_name>
+  issuerRef:
+    name: <issuer_name>
+
+</pre>
 
 ## Reference
 https://cert-manager.io/
